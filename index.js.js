@@ -3,7 +3,7 @@ const fs = require('fs');
 const {
   Client,
   GatewayIntentBits,
-  PermissionFlagsBits,
+  PermissionFlagsBits,  
   ChannelType,
   ModalBuilder,
   TextInputBuilder,

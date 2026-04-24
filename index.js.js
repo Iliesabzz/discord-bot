@@ -10,7 +10,8 @@ const {
   TextInputStyle,
   ActionRowBuilder,
   REST,
-  Routes
+  Routes,
+  EmbedBuilder
 } = require('discord.js');
 
 const client = new Client({
@@ -77,6 +78,7 @@ const commands = [
   { name: "vocstatus", description: "Liste des personnes en vocal" },
   { name: "serverinfo", description: "Infos serveur" },
   { name: "help", description: "Liste des commandes" },
+  { name: "ram", description: "Utilisation RAM du bot" },
   { name: "reload", description: "Met à jour les commandes" },
   { name: "shutdown", description: "Éteindre le bot (code secret)" },
 
@@ -287,6 +289,33 @@ client.on("interactionCreate", async (interaction) => {
       content: "@everyone LoL",
       allowedMentions: { parse: ["everyone"] }
     });
+
+  if (cmd === "ram") {
+    const usage = process.memoryUsage();
+    
+    // Convertir en MB
+    const heapUsed = (usage.heapUsed / 1024 / 1024).toFixed(2);
+    const heapTotal = (usage.heapTotal / 1024 / 1024).toFixed(2);
+    const rss = (usage.rss / 1024 / 1024).toFixed(2);
+    const external = (usage.external / 1024 / 1024).toFixed(2);
+    
+    // Créer l'embed
+    const ramEmbed = new EmbedBuilder()
+      .setTitle("📊 Utilisation RAM du Bot")
+      .setColor(COLORS.info)
+      .addFields(
+        { name: "💾 Heap Utilisée", value: `${heapUsed} MB`, inline: true },
+        { name: "💾 Heap Totale", value: `${heapTotal} MB`, inline: true },
+        { name: "🔴 RSS (Mémoire Réelle)", value: `${rss} MB`, inline: true },
+        { name: "⚙️ Externe", value: `${external} MB`, inline: true },
+        { name: "🖥️ Pourcentage", value: `${((usage.heapUsed / usage.heapTotal) * 100).toFixed(2)}%`, inline: true },
+        { name: "⏱️ Uptime", value: `${Math.floor(process.uptime() / 60)} minutes`, inline: true }
+      )
+      .setFooter({ text: "Render.com" })
+      .setTimestamp();
+
+    return interaction.reply({ embeds: [ramEmbed] });
+  }
 
   if (cmd === "shutdown") {
     const modal = new ModalBuilder()
